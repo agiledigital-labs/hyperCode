@@ -1,39 +1,38 @@
-import { Repo } from "hypermerge";
-// import Hyperswarm from "hyperswarm";
+import * as automerge from 'automerge';
+import { readFileSync } from "fs";
 import * as vscode from "vscode";
-
-const path = ".data";
-
-const repo = new Repo({ memory: true,  path: ".test" });
 
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "a" is now active!');
 	
+
 	let disposable = vscode.commands.registerCommand("a.helloWorld", () => {
-    // const activeText =
-    // vscode?.window.activeTextEditor?.document.fileName || "hyper";
-    // console.log(activeText);
+    const activeText =
+    vscode?.window.activeTextEditor?.document.fileName || "hyper";
+    console.log(activeText);
 
-    // repo.setSwarm(Hyperswarm());
+	let doc = automerge.from({cards: []})
 
-    const url = repo.create({ hello: "world", });
 
-    // const docStart = readFileSync(activeText).toString();
 
-    // repo.doc(url, (doc: any) => console.log(doc));
+    let docStart = readFileSync(activeText).toString();
 
-    // repo.change(url, (state: any) => (state.start = docStart));
-
-    // repo.doc(url, (doc: any) => console.log(doc));
-
-    // The code you place here will be executed every time your command is executed
 
     vscode.workspace.onDidChangeTextDocument((event) => {
+
+		const text  =event.contentChanges.map(t => t.text)
+
+	let docStart = automerge.change(doc, 'T1 typed', doc1 =>{ 
+		// @ts-ignore
+		doc1.cards.push(text)
+	});
+
+	console.log(doc.cards)
       console.log(event);
     });
 
-    vscode.window.showInformationMessage(url);
+    vscode.window.showInformationMessage("url");
   });
 
   context.subscriptions.push(disposable);
